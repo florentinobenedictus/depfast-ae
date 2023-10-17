@@ -6,6 +6,8 @@
 #include "../procedure.h"
 #include "../command_marshaler.h"
 #include "../rcc_rpc.h"
+#include <sched.h>
+#include <pthread.h>
 
 namespace janus {
 
@@ -34,15 +36,20 @@ shared_ptr<SampleCrpcQuorumEvent> SampleCrpcCommo::crpc_add(parid_t par_id,
                                       const int64_t& value2,
                                       shared_ptr<Marshallable> cmd) {
   //Log_info("Inside SampleCrpcCommo::crpc_add");
-  static bool hasPrinted = false;  // Static variable to track if it has printed
-  if (!hasPrinted) {
-      Log_info("In crpcAdd_ring_back; tid of leader is %d", gettid());
-      hasPrinted = true;  // Update the static variable
-  }
-
   int n = Config::GetConfig()->GetPartitionSize(par_id);
   auto e = Reactor::CreateSpEvent<SampleCrpcQuorumEvent>(n, n/2 + 1);
   auto proxies = rpc_par_proxies_[par_id];
+  static bool hasPrinted = false;  // Static variable to track if it has printed
+  if (!hasPrinted) {
+      pid_t t = gettid();
+      Log_info("In crpcAdd_ring_back; tid of leader is %d", t);
+      // cpu_set_t cs;
+      // CPU_ZERO(&cs);
+      // // for (int i = 0; i < 1; i++) CPU_SET(i, &cs);
+      // CPU_SET(0, &cs);
+      // verify(sched_setaffinity(t, sizeof(cs), &cs) == 0);
+      hasPrinted = true;  // Update the static variable
+  }
 
   unordered_set<std::string> ip_addrs {};
   std::vector<std::shared_ptr<rrr::Client>> clients;

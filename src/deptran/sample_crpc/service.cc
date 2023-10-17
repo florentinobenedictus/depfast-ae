@@ -2,10 +2,13 @@
 #include "service.h"
 #include "server.h"
 #include <thread>
-# include <gperftools/profiler.h>
+#include <gperftools/profiler.h>
+#include <sched.h>
+#include <pthread.h>
 
 namespace janus {
 thread_local bool hasPrinted2 = false;
+int i = 0;
 
 SampleCrpcServiceImpl::SampleCrpcServiceImpl(TxLogServer *sched)
     : sched_((SampleCrpcServer*)sched) {
@@ -24,7 +27,12 @@ void SampleCrpcServiceImpl::CrpcAdd(const uint64_t& id,
   verify(sched_ != nullptr);
   //Log_info("*** inside SampleCrpcServiceImpl::CrpcAdd; tid: %d", gettid());
   if (!hasPrinted2) {
-      Log_info("tid of non-leader is %d", gettid());
+      thread_local pid_t t = gettid();
+      Log_info("tid of non-leader is %d", t);
+      thread_local cpu_set_t cs;
+      CPU_ZERO(&cs);
+      CPU_SET(i++, &cs);
+      verify(sched_setaffinity(t, sizeof(cs), &cs) == 0);
       hasPrinted2 = true;  // Update the static variable
   }
 
