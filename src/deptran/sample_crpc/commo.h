@@ -43,7 +43,7 @@ friend class SampleCrpcProxy;
  public:
   std::unordered_map<uint64_t, shared_ptr<SampleCrpcQuorumEvent>> cRPCEvents {};
 
-	SampleCrpcCommo() = delete;
+  SampleCrpcCommo() = delete;
   SampleCrpcCommo(PollMgr*);
 
   shared_ptr<SampleCrpcQuorumEvent> crpc_add(parid_t par_id,
@@ -58,8 +58,7 @@ friend class SampleCrpcProxy;
               const int64_t& value2,
               shared_ptr<Marshallable> cmd);
 
-  void CrpcAdd3(const parid_t par_id,
-              const uint64_t& id,
+  void CrpcAdd3(const uint64_t& id,
               const int64_t& value1,
               const int64_t& value2,
               const std::vector<uint16_t>& addrChain, 
