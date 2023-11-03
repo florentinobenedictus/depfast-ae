@@ -240,19 +240,6 @@ int SchedulerClassic::OnCommit(txnid_t tx_id,
     auto sp_m = dynamic_pointer_cast<Marshallable>(cmd);
     shared_ptr<Coordinator> coo(CreateRepCoord(dep_id.id));
     // Log_info("***** inside SchedulerClassic::OnCommit; cp1; tid: %d", gettid());
-    if (!hasCpuset){
-      hasCpuset = true;
-      int UsedCore = 0;
-      cpu_set_t cpuset;
-      CPU_ZERO(&cpuset);
-      CPU_SET(UsedCore, &cpuset);
-      if(sched_setaffinity(gettid(), sizeof(cpu_set_t), &cpuset) != 0){
-        Log_info("ERROR ERROR!!!");
-      }
-      else {
-        Log_info("CPU SET to %d for leader tid: %d", UsedCore, gettid());
-      }
-    }
     coo->Submit(sp_m);
     sp_tx->commit_result->Wait();
 		slow_ = coo->slow_;

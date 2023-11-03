@@ -394,6 +394,7 @@ class PollMgr::PollThread {
 		Log_info("starting poll thread");
     pid_t t = gettid();
     // Log_info("From the function, poll thread %d; tid: %d", i, t);
+    Log_info("poll thread tid: %d", t);
     cpu_set_t cs;
     CPU_ZERO(&cs);
     CPU_SET(0, &cs);
